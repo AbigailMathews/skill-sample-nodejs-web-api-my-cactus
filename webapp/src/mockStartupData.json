@@ -17,18 +17,20 @@
   "timeZone": "America/Los_Angeles",
   "timesChecked": 1,
   "unlockedBadges": {
-    "durations": {
-      "1": true,
-      "14": true,
-      "180": false,
-      "3": true,
-      "30": false,
-      "365": false,
-      "7": true,
-      "90": false
-    },
+    "latest": "",
+    "waterUnits": [],
     "earlyBird": false,
     "nightOwl": false,
-    "waterUnits": []
+    "durations": {
+        "1": false,
+        "3": false,
+        "7": false,
+        "14": false,
+        "30": false,
+        "90": false,
+        "180": false,
+        "365": false
+    },
+    "helicopterParent": false
   }
 }

@@ -2,6 +2,7 @@ const THREE = require('three');
 const GLTFLoader = require('three/examples/jsm/loaders/GLTFLoader');
 const selector = require('./selector');
 const screenShake = require('./screenShake');
+const badges = require('./badges');
 const OrbitControls = require('three/examples/jsm/controls/OrbitControls');
 const startInfo = require('./mockStartupData.json');
 
@@ -22,7 +23,9 @@ var debugElement = document.getElementById("debugInfo");
 var canvas = document.getElementById("webGLCanvas");
 var waterStatusBar = document.getElementById("waterBar"); 
 var healthSatusBar = document.getElementById("healthBar"); 
-var nameElement = document.getElementById("name"); 
+var nameElement = document.getElementById("name");
+var badgeElement = document.getElementById("badgeHud"); 
+
 infoElement.style.display = "none";
 
 if(debugLevel < 1) { // hide the debug element if no debugging.
@@ -290,6 +293,16 @@ function init() {
     document.addEventListener("touchstart", domTouch, true);
     document.addEventListener("mousedown", domClick, true);
 
+    badgeElement.onclick = function() {
+        if(alexa != null) {
+            alexa.skill.sendMessage({
+                intent:"CheckBadgesIntent",
+                clicked:"badgeButton"
+            });
+        }
+        badges.showBadges();
+    }
+
     //Load web Audio into the scene
     loadAudio();
 
@@ -351,6 +364,8 @@ function refreshGameState(dataPayload) {
     //initialize state of objects
     blinds.init(cactusState, debugLevel);
     cactus.init(cactusState, debugLevel);
+
+    badges.refreshBadges(dataPayload.unlockedBadges);
     
     // Adding the background texture.
     let bgTexture;
