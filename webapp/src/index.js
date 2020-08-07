@@ -198,6 +198,9 @@ function setupAlexa() {
                 case "blindsUp":
                     blinds.raise();
                     break;
+                case "showBadges":
+                    badges.showBadges();
+                    break;
                 case "getStatus":
                 case "newCactus":
                     cactus.dance();

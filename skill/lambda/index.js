@@ -19,12 +19,12 @@ const moment = require('moment-timezone');
 
 const persistenceAdapter = require('ask-sdk-s3-persistence-adapter');
 //TODO change this URL to your publicly accessible HTTPS endpoint.
-const webAppBaseURL = "https://4198a7def9a7.ngrok.io";
+const webAppBaseURL = "https://1107e837a491.ngrok.io";
 
 const MESSAGE_REQUEST = 'Alexa.Presentation.HTML.Message';
 const WATER_INCREMENT = 10;
 const WATER_THRESHOLD = 20;
-const HELICOPTER_THRESHOLD = 5;
+const HELICOPTER_THRESHOLD = 2;
 
 const WATER_LEVEL_PER_LITER = 84;
 
@@ -607,6 +607,32 @@ const FallbackMessageRequestHandler = {
     }
 }
 
+const ShowBadgesIntentHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ShowBadgesIntent';
+    },
+    handle(handlerInput) {
+        const speakOutput = 'You have earned the following badges.';
+        //TODO list out the badges by voice iff there is no web API enabled
+        if(supportsHTMLInterface(handlerInput)) {
+            handlerInput.responseBuilder.addDirective({
+                "type":"Alexa.Presentation.HTML.HandleMessage",
+                "message": {
+                    "intent":"showBadges",
+                    "playAnimation": true,
+                    "gameState": getProfile(handlerInput)
+                }
+            });
+        }
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
+            .getResponse();
+    }
+};
+
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -910,7 +936,7 @@ const evaluateBadges = function(profile, currentTime) {
     if (!unlockedBadges.helicopterParent 
             && profile.timesChecked >= HELICOPTER_THRESHOLD) {
         unlockedBadges.helicopterParent = true;
-        unlockedBadges.latest = 'For hovering over your cactus like a helicopter parent by checking on your cactus 5 times in one day.';
+        unlockedBadges.latest = `For hovering over your cactus like a helicopter parent by checking on your cactus ${HELICOPTER_THRESHOLD} times in one day.`
     }
 
     return unlockedBadges
@@ -942,7 +968,7 @@ const ErrorHandler = {
     },
     handle(handlerInput, error) {
         console.log(`~~~~ Error handled: ${error.stack}`);
-        const speakOutput = `<amazon:emotion name="disappointed" intensity="high">Joe you broke the merge.</amazon:emotion>`;
+        const speakOutput = `<amazon:emotion name="disappointed" intensity="high">Justin you broke the code.</amazon:emotion>`;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -1136,6 +1162,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         hasCactusCaptureDestinationHandler,
         CaptureDestinationHandler,
         WaterCactusIntentHandler,
+        ShowBadgesIntentHandler,
         WebAppCloudLogger,
         HasCactusOpenBlindsIntentHandler,
         OpenBlindsIntentHandler,
