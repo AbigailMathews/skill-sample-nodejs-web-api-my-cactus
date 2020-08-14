@@ -47,42 +47,37 @@ const badgeFiles = {
 
 module.exports = {
     refreshBadges(badgeData) {
-        if(oldBadgeObj === null) {
-            //First time loading badges
-        } else {
-            //DO our comparison.
-            for (const [key, value] of Object.entries(badgeFiles)) {
-                //if a badge changed, show it.
-                if(badgeData[key] != oldBadgeObj[key]) {
-                    this.updateBadge(value.domElement, badgeData[key]);
-                    if(badgeData[key]) {
-                        this.showNewBadge(value.fileName);
-                    }
-                }
-            }
+        //DO our comparison.
+        for (const [key, value] of Object.entries(badgeFiles)) {
+            console.log(`changing badge with ${JSON.stringify(key)}, ${JSON.stringify(value)}`);
+            //if a badge changed, show it.
+            this.updateBadge(value.domElement, badgeData[key]);
         }
-        oldBadgeObj = badgeData;
     },
-    showNewBadge(badgeFileName) { // TODO debug this. not working correctly.
+    showNewBadge(badgeKey) { // TODO debug this. not working correctly.
+        console.log("Attempting to show badge at key: " + badgeKey);
+        const badgeFileName = badgeFiles[badgeKey];
+        console.log("Attempting to show badge file: " + badgeFileName);
+
         fullScreenNewBadgeOverlay.style.display = "block";
         canvas.style.display = "none";
         fullScreenBadgeOverlay.style.display = "none";
         const newBadgeImg = document.create('img');
-        newBadgeImg.src = BADGE_ART_DIR + badgeFileName;
+        newBadgeImg.src = BADGE_ART_DIR + "/On/" + badgeFileName;
         fullScreenNewBadgeOverlay.appendChild(newBadgeImg);
 
         window.setTimeout(function() {
             console.log("remove child");
-            newBadgeImg.parentNode.removeChild(newBadgeImg);
             this.showBadges();
-        }, 7000);
+            newBadgeImg.parentNode.removeChild(newBadgeImg);
+        }, 700000); // todo make this smaller
     },
     showBadges() {
         fullScreenNewBadgeOverlay.style.display = "none";
         fullScreenBadgeOverlay.style.display = "block";
         canvas.style.display = "none";
 
-        window.setTimeout(this.hideBadges, 8000);
+        window.setTimeout(this.hideBadges, 80000000);//todo make this smaller
     },
     hideBadges() {
         fullScreenBadgeOverlay.style.display = "none";
