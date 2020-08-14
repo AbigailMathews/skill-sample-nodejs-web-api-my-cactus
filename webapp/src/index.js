@@ -63,7 +63,7 @@ try {
 
     //Start the process.
     render();
-    
+
     //Create a Spider after some time.
     if(assetsLoaded) {
         window.setTimeout(function() {
@@ -191,7 +191,7 @@ function setupAlexa() {
         console.log("Game State: " + JSON.stringify(message.gameState));
         if(message.gameState.newBadge) {
             console.log("Showing new badge");
-            badges.showNewBadge(message.gameState.unlockedBadges.latestKey);
+            badges.showNewBadge(message.gameState.unlockedBadges.latestKey, message.gameState.unlockedBadges.latest);
         }
 
         //If in intent exists and matches one of the below, play all local animations/sounds.

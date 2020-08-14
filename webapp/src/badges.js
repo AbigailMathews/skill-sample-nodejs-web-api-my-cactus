@@ -21,10 +21,19 @@
  * 
  */
 
+ //TODO use these eventually and make this class a GUI manager instead of badge specific.
+var infoElement = document.getElementById("info");
+var debugElement = document.getElementById("debugInfo");
+var waterStatusBar = document.getElementById("waterBar"); 
+var healthSatusBar = document.getElementById("healthBar"); 
+var nameElement = document.getElementById("name");
+var badgeElement = document.getElementById("badgeHud"); 
+var displayElementsGame = document.getElementById("onScreenHud");
+
 var oldBadgeObj = null;
 var badgeButtonElement = document.getElementById("badgeButton");
 var fullScreenBadgeOverlay = document.getElementById("allBadges");
-var fullScreenNewBadgeOverlay = document.getElementById("newBadge"); // This scrolls. TODO fix it.
+var fullScreenNewBadgeOverlay = document.getElementById("newBadge");
 var canvas = document.getElementById("webGLCanvas");
 
 const BADGE_ART_DIR = "./assets/source-art/badges/";
@@ -54,35 +63,56 @@ module.exports = {
             this.updateBadge(value.domElement, badgeData[key]);
         }
     },
-    showNewBadge(badgeKey) { // TODO debug this. not working correctly.
+    showNewBadge(badgeKey, description) { // TODO debug this. not working correctly.
         console.log("Attempting to show badge at key: " + badgeKey);
-        const badgeFileName = badgeFiles[badgeKey];
+        const badgeFileName = badgeFiles[badgeKey].fileName;
         console.log("Attempting to show badge file: " + badgeFileName);
 
         fullScreenNewBadgeOverlay.style.display = "block";
         canvas.style.display = "none";
         fullScreenBadgeOverlay.style.display = "none";
-        const newBadgeImg = document.create('img');
-        newBadgeImg.src = BADGE_ART_DIR + "/On/" + badgeFileName;
-        fullScreenNewBadgeOverlay.appendChild(newBadgeImg);
+        //Add the text description of the badge
+        const newBadgeTxt = document.createTextNode(description);
+        var descriptionAbsolute = document.createElement("div");
+        descriptionAbsolute.style.top = "70%";
+        descriptionAbsolute.style.left = "50%";        
+        descriptionAbsolute.style.position = "absolute";
 
-        window.setTimeout(function() {
+        var badgeDescription = document.createElement("div");
+        badgeDescription.style.left = "-50%";        
+        badgeDescription.style.position = "relative";
+        badgeDescription.appendChild(newBadgeTxt);
+        descriptionAbsolute.appendChild(badgeDescription);
+
+        fullScreenNewBadgeOverlay.insertBefore(descriptionAbsolute, fullScreenNewBadgeOverlay.childNodes[0]);
+
+        //Add the image of the badge
+        const newBadgeImg = document.createElement('img');
+        newBadgeImg.src = BADGE_ART_DIR + "On/" + badgeFileName;
+        newBadgeImg.style.position = "absolute";
+        newBadgeImg.style.marginLeft = "37%";
+        fullScreenNewBadgeOverlay.insertBefore(newBadgeImg, fullScreenNewBadgeOverlay.childNodes[0]);
+        this.hideStatus();
+
+        window.setTimeout(() => {
             console.log("remove child");
             this.showBadges();
             newBadgeImg.parentNode.removeChild(newBadgeImg);
-        }, 700000); // todo make this smaller
+        }, 10000);
     },
     showBadges() {
         fullScreenNewBadgeOverlay.style.display = "none";
         fullScreenBadgeOverlay.style.display = "block";
         canvas.style.display = "none";
+        this.hideStatus();
 
-        window.setTimeout(this.hideBadges, 80000000);//todo make this smaller
+        window.setTimeout(this.hideBadges, 10000);
     },
     hideBadges() {
         fullScreenBadgeOverlay.style.display = "none";
         fullScreenNewBadgeOverlay.style.display = "none";
         canvas.style.display = "inline";
+        this.showStatus();
     },
     updateBadge(badgeReference, value) {
         if(value) {
@@ -92,5 +122,11 @@ module.exports = {
             console.log(badgeReference.src);
             badgeReference.src = badgeReference.src.replace("On", "Off");
         }
+    },
+    hideStatus() {
+        displayElementsGame.style.display = "none";
+    }, 
+    showStatus() {
+        displayElementsGame.style.display = "block";
     }
 }
